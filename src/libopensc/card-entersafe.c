@@ -33,13 +33,9 @@
 
 static struct sc_atr_table entersafe_atrs[] = {
 	{ 
-		 "3b:0f:00:65:46:53:05:19:05:71:df:00:00:00:00:00:00", 
-		 "ff:ff:ff:ff:ff:ff:ff:00:ff:ff:ff:00:00:00:00:00:00", 
-		 "ePass3000", SC_CARD_TYPE_ENTERSAFE_3K, 0, NULL },
-	{ 
 		 "3b:9f:95:81:31:fe:9f:00:65:46:53:05:30:06:71:df:00:00:00:80:6a:82:5e",
 		 "FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:FF:00:FF:FF:FF:FF:FF:FF:00:00:00:00",
-		 "FTCOS/PK-01C", SC_CARD_TYPE_ENTERSAFE_FTCOS_PK_01C, 0, NULL },
+		 "FTCOS/PK-01C", SC_CARD_TYPE_ENTERSAFE_FTCOS, 0, NULL },
 	{ NULL, NULL, NULL, 0, 0, NULL }
 };
 
@@ -47,8 +43,8 @@ static struct sc_card_operations entersafe_ops;
 static struct sc_card_operations *iso_ops = NULL;
 
 static struct sc_card_driver entersafe_drv = {
-	"entersafe",
-	"entersafe",
+	"entersafe_test",
+	"entersafe_test",
 	&entersafe_ops,
 	NULL, 0, NULL
 };
@@ -100,7 +96,7 @@ static int entersafe_init(sc_card_t *card)
 
 	SC_FUNC_CALLED(card->ctx, SC_LOG_DEBUG_VERBOSE);
 
-	card->name = "entersafe";
+	card->name = "entersafe_test";
 	card->cla  = 0x00;
 	card->drv_data = NULL;
 
@@ -120,6 +116,22 @@ static int entersafe_init(sc_card_t *card)
 	card->max_recv_size = 224;
 	SC_FUNC_RETURN(card->ctx, SC_LOG_DEBUG_VERBOSE,SC_SUCCESS);
 }
+
+/*static struct sc_card_driver * sc_get_driver(void)
+{
+	struct sc_card_driver *iso_drv = sc_get_iso7816_driver();
+
+	if (iso_ops == NULL)
+		iso_ops = iso_drv->ops;
+  
+	entersafe_ops = *iso_drv->ops;
+	entersafe_ops.match_card = entersafe_match_card;
+	entersafe_ops.init   = entersafe_init;
+
+	return &entersafe_drv;
+}*/
+
+/************* FUNCIONES NUEVAS QUE IMPLEMENTAN LA ISO  ***************/
 
 static int entersafe_cipher_apdu(sc_card_t *card, sc_apdu_t *apdu,
 								 u8 *key, size_t keylen,
@@ -609,6 +621,33 @@ static int entersafe_pin_cmd(sc_card_t *card, struct sc_pin_cmd_data *data,
 	 }
 	 SC_FUNC_RETURN(card->ctx, SC_LOG_DEBUG_VERBOSE, r);
 }
+/*static struct sc_card_driver * sc_get_driver(void)
+{
+	struct sc_card_driver *iso_drv = sc_get_iso7816_driver();
+
+	if (iso_ops == NULL)
+		iso_ops = iso_drv->ops;
+  
+	entersafe_ops = *iso_drv->ops;
+	entersafe_ops.match_card = entersafe_match_card;
+	entersafe_ops.init   = entersafe_init;
+
+	/* iso7816-4 functions */
+	//entersafe_ops.read_binary	= entersafe_read_binary;
+	//entersafe_ops.write_binary	= NULL;
+	//entersafe_ops.update_binary	= entersafe_update_binary;
+
+	/* iso7816-8 functions */
+	//entersafe_ops.restore_security_env = entersafe_restore_security_env;
+	//entersafe_ops.set_security_env  = entersafe_set_security_env;
+	//entersafe_ops.decipher = entersafe_decipher;
+	//entersafe_ops.compute_signature = entersafe_compute_signature;
+
+	/* iso7816-9 functions */
+	/*entersafe_ops.pin_cmd = entersafe_pin_cmd;
+
+	return &entersafe_drv;
+}*/
 
 static int entersafe_process_fci(struct sc_card *card, struct sc_file *file,
 						  const u8 *buf, size_t buflen)
@@ -890,7 +929,10 @@ static struct sc_card_driver * sc_get_driver(void)
 	return &entersafe_drv;
 }
 
-struct sc_card_driver * sc_get_entersafe_driver(void)
+/**********************************************************************/
+
+
+struct sc_card_driver * sc_get_entersafe_test_driver(void)
 {
 	return sc_get_driver();
 }
